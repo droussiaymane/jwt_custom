@@ -3,7 +3,9 @@ package com.project.demo.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.demo.dao.*;
+import com.project.demo.requests.QuizRequest;
 import com.project.demo.service.QuizService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +48,11 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(quizService.getQuizByIdForStudent(id, studentId));
     }
 
+
     @PostMapping
-    public ResponseEntity<Quiz> createQuiz(@RequestBody QuizForm quizForm) {
-        Quiz quiz = quizForm.getQuiz();
-        System.out.println(quiz);
+    public ResponseEntity<Quiz> createQuiz(@RequestBody QuizRequest quizForm) {
+       ModelMapper modelMapper=new ModelMapper();
+        Quiz quiz = modelMapper.map(quizForm, Quiz.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(quizService.save(quiz));
     }
 

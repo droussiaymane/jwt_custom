@@ -37,7 +37,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file,
-                                                      @RequestParam("ownerId") Integer ownerId, @RequestParam(name="ownerRole") String ownerRole) {
+                                                      @RequestParam("ownerId") String ownerId, @RequestParam(name="ownerRole") String ownerRole) {
         String message = "";
         try {
             System.out.println(file);
@@ -48,12 +48,12 @@ public class FileController {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
             metadataFile.setPostDate(now);
-            metadataFile.setOwnerId(ownerId);
-            if (ownerRole.equals("student")) {
-                Student student = studentService.getById(ownerId);
+            metadataFile.setOwnerId(Integer.valueOf(ownerId));
+            if (ownerRole.equals("ROLE_STUDENT")) {
+                Student student = studentService.getById(Integer.valueOf(ownerId));
                 metadataFile.setOwnerName(student.getName());
-            } else if (ownerRole.equals("teacher")) {
-                Teacher teacher = teacherService.getById(ownerId);
+            } else if (ownerRole.equals("ROLE_TEACHER")) {
+                Teacher teacher = teacherService.getById(Integer.valueOf(ownerId));
                 metadataFile.setOwnerName(teacher.getName());
             }
             System.out.println(metadataFile);

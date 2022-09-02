@@ -9,5 +9,7 @@ public interface UserService extends UserDetailsService {
     public User getUser(String email);
     public User createUser(UserRegisterRequest user);
 
+    public String getUsername(int id);
+
 
 }

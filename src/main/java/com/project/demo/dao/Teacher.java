@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Data
 public class Teacher {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     @Column(name="name")
     String name;

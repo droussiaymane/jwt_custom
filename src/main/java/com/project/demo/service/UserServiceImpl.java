@@ -70,18 +70,29 @@ public class UserServiceImpl implements UserService{
         User userCreated = modelMapper.map(user, User.class);
         userCreated.setPassword(passwordEncoder.encode(user.getPassword()));
 
-
+        User userRegistred=userRepository.save(userCreated);
         // check the type of the user
         if(user.getRole().equals("ROLE_TEACHER")){
             Teacher teacher = modelMapper.map(user, Teacher.class);
+            teacher.setId(userRegistred.getId());
             teacherRepository.save(teacher);
         }
         else{
             userCreated.setRole("ROLE_STUDENT");
             Student student = modelMapper.map(user, Student.class);
+            student.setId(userRegistred.getId());
             studentRepository.save(student);
         }
-        User userRegistred=userRepository.save(userCreated);
+
         return userRegistred;
+    }
+
+    @Override
+    public String getUsername(int id) {
+        User user = userRepository.findById(id).get();
+        if(user==null){
+            throw new RuntimeException("No user");
+        }
+        return user.getUsername();
     }
 }
