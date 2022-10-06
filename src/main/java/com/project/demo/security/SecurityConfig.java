@@ -8,6 +8,7 @@ import com.project.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +23,7 @@ import java.security.SecureRandom;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    UserService userService;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -44,6 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    @Override
+    protected CustomAuthenticationManager authenticationManager() throws Exception {
+        return new CustomAuthenticationManager();
+    }
 
     protected AuthenticationFilter getAuthenticationFilter() throws Exception {
         final AuthenticationFilter authenticationFilter=new AuthenticationFilter(authenticationManager());
@@ -52,10 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationFilter;
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService);
-    }
+
 
 
 }

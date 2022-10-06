@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
+    private CustomAuthenticationManager authenticationManager;
 
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+    public AuthenticationFilter(CustomAuthenticationManager authenticationManager) {
         this.authenticationManager=authenticationManager;
 
     }
@@ -48,6 +48,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             );
 
         } catch (IOException e) {
+
             throw new RuntimeException(e);
         }
     }

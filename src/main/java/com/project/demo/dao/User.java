@@ -3,6 +3,7 @@ package com.project.demo.dao;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="user")
@@ -22,4 +23,13 @@ public class User {
     String password;
     @Column(name="role")
     String role;
+
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked;
+
+    @Column(name = "failed_attempt")
+    private int failedAttempt=0;
+
+    @Column(name = "lock_time")
+    private Date lockTime;
 }

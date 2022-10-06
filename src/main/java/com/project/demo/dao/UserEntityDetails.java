@@ -34,7 +34,7 @@ public class UserEntityDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.isAccountNonLocked();
     }
 
     @Override
@@ -43,6 +43,6 @@ public class UserEntityDetails implements UserDetails {
     }
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isAccountNonLocked();
     }
 }

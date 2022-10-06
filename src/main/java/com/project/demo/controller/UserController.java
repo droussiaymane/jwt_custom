@@ -1,6 +1,5 @@
 package com.project.demo.controller;
 
-import com.project.demo.dao.Student;
 import com.project.demo.dao.User;
 import com.project.demo.message.ResponseMessage;
 import com.project.demo.requests.UserRegisterRequest;

@@ -1,12 +1,7 @@
 package com.project.demo.service;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.project.demo.dao.Student;
-import com.project.demo.dao.Teacher;
 import com.project.demo.dao.User;
 import com.project.demo.dao.UserEntityDetails;
-import com.project.demo.repository.StudentRepository;
-import com.project.demo.repository.TeacherRepository;
 import com.project.demo.repository.UserRepository;
 import com.project.demo.requests.UserRegisterRequest;
 import org.modelmapper.ModelMapper;
@@ -17,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -32,22 +29,50 @@ public class UserServiceImpl implements UserService{
     PasswordEncoder passwordEncoder;
 
 
-    @Autowired
-    TeacherRepository teacherRepository;
 
-    @Autowired
-    StudentRepository studentRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByMail(email);
-        if(user==null){
-            logger.error("user not found");
-            throw new UsernameNotFoundException("Sorry, User Not exist");
+    public void updateFailedAttempts(int failAttempts, String email){
+        User user=userRepository.findByMail(email);
+        user.setFailedAttempt(failAttempts);
+        userRepository.save(user);
+
+    }
+    @Override
+    public void increaseFailedAttempts(User user) {
+        int newFailAttempts = user.getFailedAttempt() + 1;
+        updateFailedAttempts(newFailAttempts, user.getMail());
+    }
+
+    @Override
+    public void resetFailedAttempts(String email) {
+        updateFailedAttempts(0, email);
+    }
+
+    @Override
+    public void lock(User user) {
+        user.setAccountNonLocked(false);
+        user.setLockTime(new Date());
+        userRepository.save(user);
+    }
+
+    @Override
+    public boolean unlockWhenTimeExpired(User user) {
+        long lockTimeInMillis = user.getLockTime().getTime();
+        long currentTimeInMillis = System.currentTimeMillis();
+
+        if (lockTimeInMillis + LOCK_TIME_DURATION < currentTimeInMillis) {
+            user.setAccountNonLocked(true);
+            user.setLockTime(null);
+            user.setFailedAttempt(0);
+            userRepository.save(user);
+            return true;
         }
 
-        return new UserEntityDetails(user);
+        return false;
     }
+
+
 
     @Override
     public User getUser(String email) throws UsernameNotFoundException{
@@ -69,21 +94,9 @@ public class UserServiceImpl implements UserService{
         ModelMapper modelMapper = new ModelMapper();
         User userCreated = modelMapper.map(user, User.class);
         userCreated.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        userCreated.setAccountNonLocked(true);
         User userRegistred=userRepository.save(userCreated);
         // check the type of the user
-        if(user.getRole().equals("ROLE_TEACHER")){
-            Teacher teacher = modelMapper.map(user, Teacher.class);
-            teacher.setId(userRegistred.getId());
-            teacherRepository.save(teacher);
-        }
-        else{
-            userCreated.setRole("ROLE_STUDENT");
-            Student student = modelMapper.map(user, Student.class);
-            student.setId(userRegistred.getId());
-            studentRepository.save(student);
-        }
-
         return userRegistred;
     }
 
